@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.home.reminisce.service.SessionServiceImplTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-05-29T18:29:03" hostname="Antons-MacBook-Pro.local" time="0.047">
-  <properties/>
-  <testcase name="givenInProgressSession_whenUpdatingToCompletedStatus_thenStatusIsUpdatedAndSaved()" classname="com.home.reminisce.service.SessionServiceImplTest" time="0.045"/>
-  <testcase name="givenCompletedSession_whenUpdatingStatus_thenTimestampRemainsUnchanged()" classname="com.home.reminisce.service.SessionServiceImplTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
