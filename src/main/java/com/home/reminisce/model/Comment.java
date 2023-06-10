@@ -1,16 +1,14 @@
 package com.home.reminisce.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
 
     private Long sessionId;
@@ -21,9 +19,9 @@ public class Comment {
 
     private String text;
 
-    private Integer votesPositive;
-
-    private Integer votesNegative;
-
     private Integer categoryId;
+
+    @OneToMany
+    @JoinColumn(name = "commentId")
+    private List<Reaction> reactions;
 }
