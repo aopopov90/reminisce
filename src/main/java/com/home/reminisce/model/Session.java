@@ -15,7 +15,7 @@ import java.util.List;
 public class Session {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private long id;
 
     private String name;
@@ -23,6 +23,8 @@ public class Session {
     private Instant createdOn;
 
     private Instant endedOn;
+
+    private String createdBy;
 
     @Enumerated(EnumType.STRING)
     private SessionStatus status;

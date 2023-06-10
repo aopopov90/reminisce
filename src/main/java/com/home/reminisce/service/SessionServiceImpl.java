@@ -6,6 +6,8 @@ import com.home.reminisce.model.SessionStatus;
 import com.home.reminisce.repository.SessionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -18,9 +20,11 @@ import java.util.Optional;
 public class SessionServiceImpl implements SessionService {
 
     private final SessionRepository sessionRepository;
+    private final UserDetailsService userDetailsService;
 
-    public SessionServiceImpl(SessionRepository sessionRepository) {
+    public SessionServiceImpl(SessionRepository sessionRepository, UserDetailsService userDetailsService) {
         this.sessionRepository = sessionRepository;
+        this.userDetailsService = userDetailsService;
     }
 
     public Session findById(long id) {
@@ -41,6 +45,7 @@ public class SessionServiceImpl implements SessionService {
     public Session createSession(SessionRequest sessionRequest) {
         return sessionRepository.save(Session.builder()
                 .name(sessionRequest.name())
+                .createdBy(SecurityContextHolder.getContext().getAuthentication().getName())
                 .status(SessionStatus.IN_PROGRESS)
                 .createdOn(Instant.now())
                 .build());
