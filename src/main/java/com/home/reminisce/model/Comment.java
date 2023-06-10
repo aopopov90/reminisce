@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Entity
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
 
     private Long sessionId;
