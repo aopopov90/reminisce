@@ -1,10 +1,19 @@
 package com.home.reminisce.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
+@Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Reaction {
     @Id
     @GeneratedValue
@@ -14,7 +23,8 @@ public class Reaction {
 
     private String authoredBy;
 
-    private Timestamp createdOn;
+    private Instant createdOn;
 
+    @Enumerated(EnumType.STRING)
     private ReactionType reactionType;
 }
