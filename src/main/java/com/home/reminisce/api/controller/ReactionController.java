@@ -21,8 +21,7 @@ public class ReactionController {
 
     @PostMapping
     public ResponseEntity<Reaction> createReaction(@RequestBody ReactionRequest reactionRequest) {
-        Reaction createdReaction = reactionService.createReaction(reactionRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdReaction);
+        return reactionService.createReaction(reactionRequest);
     }
 
     @DeleteMapping("/{id}")
