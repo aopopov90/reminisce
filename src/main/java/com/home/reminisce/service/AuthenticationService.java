@@ -8,8 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static org.hibernate.boot.model.process.spi.MetadataBuildingProcess.build;
-
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
