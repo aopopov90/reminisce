@@ -1,6 +1,7 @@
 package com.home.reminisce.service;
 
 import com.home.reminisce.api.model.CommentRequest;
+import com.home.reminisce.exceptions.UnauthorizedAccessException;
 import com.home.reminisce.model.Comment;
 import com.home.reminisce.repository.CommentRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,7 +36,11 @@ public class CommentServiceImpl implements CommentService {
         Optional<Comment> commentOptional = commentRepository.findById(id);
         if (commentOptional.isPresent()) {
             Comment comment = commentOptional.get();
-            commentRepository.delete(comment);
+            if (comment.getAuthoredBy().equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+                commentRepository.delete(commentOptional.get());
+            } else {
+                throw new UnauthorizedAccessException("You are not authorized to delete this comment.");
+            }
         } else {
             throw new NoSuchElementException("Comment not found with ID" + id);
         }
@@ -46,9 +51,13 @@ public class CommentServiceImpl implements CommentService {
         Optional<Comment> commentOptional = commentRepository.findById(id);
         if (commentOptional.isPresent()) {
             Comment comment = commentOptional.get();
-            comment.setText(commentRequest.text());
-            comment.setCategoryId(commentRequest.categoryId());
-            return commentRepository.save(comment);
+            if (comment.getAuthoredBy().equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+                comment.setText(commentRequest.text());
+                comment.setCategoryId(commentRequest.categoryId());
+                return commentRepository.save(comment);
+            } else {
+                throw new UnauthorizedAccessException("You are not authorized to update this comment.");
+            }
         } else {
             throw new NoSuchElementException("Comment not found with ID" + id);
         }

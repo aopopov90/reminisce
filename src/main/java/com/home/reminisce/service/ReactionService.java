@@ -6,5 +6,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface ReactionService {
     ResponseEntity<Reaction> createReaction(ReactionRequest reactionRequest);
+
     void deleteReaction(Long reactionId);
 }

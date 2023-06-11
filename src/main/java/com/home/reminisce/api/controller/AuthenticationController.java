@@ -3,7 +3,6 @@ package com.home.reminisce.api.controller;
 import com.home.reminisce.security.AuthenticationRequest;
 import com.home.reminisce.security.AuthenticationResponse;
 import com.home.reminisce.security.RegisterRequest;
-import com.home.reminisce.security.Role;
 import com.home.reminisce.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

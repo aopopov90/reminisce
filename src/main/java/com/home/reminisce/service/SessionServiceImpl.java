@@ -57,7 +57,7 @@ public class SessionServiceImpl implements SessionService {
 
         if (optionalSession.isPresent()) {
             Session session = optionalSession.get();
-            if (! Objects.equals(session.getStatus(), SessionStatus.COMPLETED)) {
+            if (!Objects.equals(session.getStatus(), SessionStatus.COMPLETED)) {
                 session.setStatus(status);
                 session.setEndedOn(Instant.now());
                 return sessionRepository.save(session);

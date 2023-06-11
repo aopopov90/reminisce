@@ -1,8 +1,10 @@
 package com.home.reminisce.service;
 
 import com.home.reminisce.api.model.ReactionRequest;
+import com.home.reminisce.exceptions.UnauthorizedAccessException;
 import com.home.reminisce.model.Reaction;
 import com.home.reminisce.repository.ReactionRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +25,7 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<Reaction> createReaction(ReactionRequest reactionRequest) {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Reaction> reactions = reactionRepository.findByCommentIdAndAuthoredBy(
@@ -51,7 +54,12 @@ public class ReactionServiceImpl implements ReactionService {
     public void deleteReaction(Long reactionId) {
         Optional<Reaction> optionalReaction = reactionRepository.findById(reactionId);
         if (optionalReaction.isPresent()) {
-            reactionRepository.delete(optionalReaction.get());
+            Reaction reaction = optionalReaction.get();
+            if (reaction.getAuthoredBy().equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+                reactionRepository.delete(optionalReaction.get());
+            } else {
+                throw new UnauthorizedAccessException("You are not authorized to delete this reaction.");
+            }
         } else {
             throw new NoSuchElementException("Reaction not found with ID" + reactionId);
         }

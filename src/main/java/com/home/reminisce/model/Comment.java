@@ -2,9 +2,7 @@ package com.home.reminisce.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 
