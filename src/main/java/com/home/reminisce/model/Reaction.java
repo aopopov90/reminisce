@@ -1,35 +1,30 @@
 package com.home.reminisce.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.stereotype.Service;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
 
 @Entity
-@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Comment {
+public class Reaction {
     @Id
     @GeneratedValue
     private Long id;
 
-    private Long sessionId;
+    private Long commentId;
 
     private String authoredBy;
 
     private Instant createdOn;
 
-    private String text;
-
-    private Integer categoryId;
-
-    @OneToMany
-    @JoinColumn(name = "commentId")
-    private List<Reaction> reactions;
+    @Enumerated(EnumType.STRING)
+    private ReactionType reactionType;
 }

@@ -4,6 +4,7 @@ import com.home.reminisce.api.model.SessionRequest;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.model.SessionStatus;
 import com.home.reminisce.service.SessionService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 public class SessionController {
 
     private SessionService sessionService;
