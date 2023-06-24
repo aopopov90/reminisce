@@ -40,7 +40,7 @@ public class CommentControllerTest {
 
         // Act
         when(commentService.createComment(any(CommentRequest.class))).thenReturn(createdComment);
-        ResponseEntity<Comment> response = commentController.createComment(commentRequest);
+        ResponseEntity<?> response = commentController.createComment(commentRequest);
 
         // Assert
         verify(commentService, times(1)).createComment(any(CommentRequest.class));
@@ -111,5 +111,22 @@ public class CommentControllerTest {
         verify(commentService, times(1)).updateComment(any(CommentRequest.class), anyLong());
         assert response.getStatusCode() == HttpStatus.OK;
         assert response.getBody() == updatedComment;
+    }
+
+    @Test
+    public void testCreateComment_UserNotSessionParticipant_ShouldReturnForbiddenStatusAndNoBody() {
+        // Arrange
+        Long commentId = 1L;
+        String errorMessage = "You are not authorized to comment in this session.";
+        CommentRequest commentRequest = new CommentRequest(1L, "Sample comment", 1);
+
+        // Act
+        doThrow(new UnauthorizedAccessException(errorMessage)).when(commentService).createComment(commentRequest);
+        ResponseEntity<?> response = commentController.createComment(commentRequest);
+
+        // Assert
+        verify(commentService, times(1)).createComment(commentRequest);
+        assert response.getStatusCode() == HttpStatus.FORBIDDEN;
+        assert response.getBody().equals(errorMessage);
     }
 }
