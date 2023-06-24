@@ -3,6 +3,7 @@ package com.home.reminisce.service;
 import com.home.reminisce.api.model.CommentRequest;
 import com.home.reminisce.exceptions.UnauthorizedAccessException;
 import com.home.reminisce.model.Comment;
+import com.home.reminisce.model.Session;
 import com.home.reminisce.repository.CommentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -26,6 +28,9 @@ public class CommentServiceImplTest {
     @Mock
     private CommentRepository commentRepository;
 
+    @Mock
+    private SessionService sessionService;
+
     @InjectMocks
     private CommentServiceImpl commentService;
 
@@ -37,13 +42,19 @@ public class CommentServiceImplTest {
 
     @BeforeEach
     public void setup() {
+        final String authenticatedUser = "user@example.com";
         MockitoAnnotations.openMocks(this);
         SecurityContextHolder.setContext(securityContext);
+        Session session = Session.builder()
+                .participants(List.of(authenticatedUser))
+                .build();
+
         when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn("user@example.com");
+        when(authentication.getName()).thenReturn(authenticatedUser);
+        when(sessionService.findById(anyLong())).thenReturn(session);
 
         commentRepository = Mockito.mock(CommentRepository.class);
-        commentService = new CommentServiceImpl(commentRepository);
+        commentService = new CommentServiceImpl(commentRepository, sessionService);
     }
 
     @Test
@@ -165,6 +176,18 @@ public class CommentServiceImplTest {
         when(commentRepository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(NoSuchElementException.class, () -> commentService.updateComment(commentRequest, commentId));
         verify(commentRepository, times(1)).findById(commentId);
+        verify(commentRepository, times(0)).save(any(Comment.class));
+    }
+
+    @Test
+    public void testCreateComment_UserNotSessionParticipant_ShouldThrowUnauthorizedAccessException() {
+        Session otherSession = Session.builder()
+                .participants(List.of("otheruser@example.com"))
+                .build();
+        CommentRequest commentRequest = new CommentRequest(1L, "Sample comment", 1);
+
+        when(sessionService.findById(anyLong())).thenReturn(otherSession);
+        assertThrows(UnauthorizedAccessException.class, () -> commentService.createComment(commentRequest));
         verify(commentRepository, times(0)).save(any(Comment.class));
     }
 }

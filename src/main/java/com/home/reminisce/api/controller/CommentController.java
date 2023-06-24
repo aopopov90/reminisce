@@ -23,9 +23,14 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<Comment> createComment(@RequestBody CommentRequest commentRequest) {
-        Comment createdComment = commentService.createComment(commentRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
+    public ResponseEntity<?> createComment(@RequestBody CommentRequest commentRequest) {
+        try {
+            Comment createdComment = commentService.createComment(commentRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
+        } catch (UnauthorizedAccessException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+
     }
 
     @DeleteMapping("/{id}")
