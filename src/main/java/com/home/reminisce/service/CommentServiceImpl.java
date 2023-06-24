@@ -3,6 +3,7 @@ package com.home.reminisce.service;
 import com.home.reminisce.api.model.CommentRequest;
 import com.home.reminisce.exceptions.UnauthorizedAccessException;
 import com.home.reminisce.model.Comment;
+import com.home.reminisce.model.Session;
 import com.home.reminisce.repository.CommentRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,19 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository) {
+    private final SessionService sessionService;
+
+    public CommentServiceImpl(CommentRepository commentRepository, SessionService sessionService) {
         this.commentRepository = commentRepository;
+        this.sessionService = sessionService;
     }
 
     @Override
     public Comment createComment(CommentRequest commentRequest) {
+        Session session = sessionService.findById(commentRequest.sessionId());
+        if (!session.getParticipants().contains(SecurityContextHolder.getContext().getAuthentication().getName())) {
+            throw new UnauthorizedAccessException("You are not authorized to comment in this session");
+        }
         return commentRepository.save(Comment.builder()
                 .sessionId(commentRequest.sessionId())
                 .text(commentRequest.text())
