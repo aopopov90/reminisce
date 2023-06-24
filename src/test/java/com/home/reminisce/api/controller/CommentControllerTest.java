@@ -114,7 +114,7 @@ public class CommentControllerTest {
     }
 
     @Test
-    public void testCreateComment_UserNotSessionParticipant_ShouldReturnForbiddenStatusAndNoBody() {
+    public void testCreateComment_UserNotSessionParticipant_ShouldReturnForbiddenStatusAndErrorMessage() {
         // Arrange
         Long commentId = 1L;
         String errorMessage = "You are not authorized to comment in this session.";
