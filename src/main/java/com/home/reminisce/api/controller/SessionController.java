@@ -1,16 +1,19 @@
 package com.home.reminisce.api.controller;
 
 import com.home.reminisce.api.model.SessionRequest;
+import com.home.reminisce.exceptions.UnauthorizedAccessException;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.model.SessionStatus;
 import com.home.reminisce.service.SessionService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @SecurityRequirement(name = "bearerAuth")
@@ -47,6 +50,18 @@ public class SessionController {
             return ResponseEntity.ok(sessionService.updateSessionStatus(id, SessionStatus.COMPLETED));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/sessions/{sessionId}/participants")
+    public ResponseEntity<?> addParticipants(@PathVariable("sessionId") long sessionId, @RequestBody List<String> participants) {
+        try {
+            List<String> updatedParticipants = sessionService.addParticipants(sessionId, participants);
+            return ResponseEntity.ok(updatedParticipants);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (UnauthorizedAccessException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
 }
