@@ -4,13 +4,15 @@ import com.home.reminisce.exceptions.UnauthorizedAccessException;
 import com.home.reminisce.model.Participation;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.repository.ParticipationRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+@Service
 public class ParticipationServiceImpl implements ParticipationService {
 
     private final SessionService sessionService;
@@ -34,18 +36,23 @@ public class ParticipationServiceImpl implements ParticipationService {
         }
 
         List<Participation> participations = participants.stream()
-                .map(participant -> new Participation(sessionId, participant,
-                        SecurityContextHolder.getContext().getAuthentication().getName(), Instant.now()))
+                .map(participant -> Participation.builder()
+                        .sessionId(sessionId)
+                        .participantName(participant)
+                        .addedBy(SecurityContextHolder.getContext().getAuthentication().getName())
+                        .addedAt(Instant.now())
+                        .build())
                 .collect(Collectors.toList());
         return participationRepository.saveAll(participations);
     }
 
     @Override
     public List<Participation> getParticipations(Long sessionId) {
-        return participationRepository.findBySessionId(Collections.singleton(sessionId));
+        return participationRepository.findBySessionId(sessionId);
     }
 
     @Override
+    @Transactional
     public void deleteParticipations(Long sessionId, List<String> participants) {
         Session session = sessionService.findById(sessionId);
         if (Optional.ofNullable(session).isEmpty()) {

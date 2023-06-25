@@ -19,15 +19,18 @@ public class CommentServiceImpl implements CommentService {
 
     private final SessionService sessionService;
 
-    public CommentServiceImpl(CommentRepository commentRepository, SessionService sessionService) {
+    private final ParticipationService participationService;
+
+    public CommentServiceImpl(CommentRepository commentRepository, SessionService sessionService, ParticipationService participationService) {
         this.commentRepository = commentRepository;
         this.sessionService = sessionService;
+        this.participationService = participationService;
     }
 
     @Override
     public Comment createComment(CommentRequest commentRequest) {
         Session session = sessionService.findById(commentRequest.sessionId());
-        if (!session.getParticipants().contains(SecurityContextHolder.getContext().getAuthentication().getName())) {
+        if (!isAuthorizedToComment(session)) {
             throw new UnauthorizedAccessException("You are not authorized to comment in this session");
         }
         return commentRepository.save(Comment.builder()
@@ -69,5 +72,12 @@ public class CommentServiceImpl implements CommentService {
         } else {
             throw new NoSuchElementException("Comment not found with ID" + id);
         }
+    }
+
+    private boolean isAuthorizedToComment(Session session) {
+        String authenticatedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        return Optional.ofNullable(session.getCreatedBy()).orElse("").equals(authenticatedUser)
+                || participationService.getParticipations(session.getId()).stream()
+                .anyMatch(participation -> participation.getParticipantName().equals(authenticatedUser));
     }
 }

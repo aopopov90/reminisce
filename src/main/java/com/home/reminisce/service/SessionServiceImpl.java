@@ -69,26 +69,9 @@ public class SessionServiceImpl implements SessionService {
         }
     }
 
-    @Override
-    public List<String> addParticipants(Long sessionId, List<String> participants) {
-        Session session = findById(sessionId);
-
-        if (!isAuthorizedToEditSession(session)) {
-            throw new UnauthorizedAccessException("You are not authorized to add participants to this session.");
-        }
-
-        List<String> updatedParticipants = new ArrayList<>();
-        updatedParticipants.addAll(Optional.ofNullable(session.getParticipants()).orElse(Collections.emptyList()));
-        updatedParticipants.addAll(participants);
-        session.setParticipants(updatedParticipants);
-        sessionRepository.save(session);
-        return updatedParticipants;
-    }
-
     private boolean isAuthorizedToEditSession(Session session) {
         String authenticatedUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        return Optional.ofNullable(session.getCreatedBy()).orElse("").equals(authenticatedUser)
-                || Optional.ofNullable(session.getParticipants()).orElse(Collections.emptyList()).contains(authenticatedUser);
+        return Optional.ofNullable(session.getCreatedBy()).orElse("").equals(authenticatedUser);
     }
 
 

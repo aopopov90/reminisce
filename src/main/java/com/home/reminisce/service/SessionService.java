@@ -17,6 +17,4 @@ public interface SessionService {
     Session createSession(SessionRequest sessionRequest);
 
     Session updateSessionStatus(long id, SessionStatus sessionStatus);
-
-    List<String> addParticipants(Long sessionId, List<String> participants);
 }

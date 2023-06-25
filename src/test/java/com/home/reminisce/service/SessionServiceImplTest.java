@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
@@ -28,6 +27,9 @@ class SessionServiceImplTest {
 
     @Mock
     SessionRepository sessionRepository;
+
+    @Mock
+    private ParticipationService participationService;
 
     @InjectMocks
     private SessionServiceImpl sessionService;
@@ -49,47 +51,6 @@ class SessionServiceImplTest {
 
         sessionService = new SessionServiceImpl(sessionRepository);
     }
-
-
-    @Test
-    public void testAddParticipants_whenUserIsSessionCreator_thenParticipantsAdded() {
-        Session session = Session.builder().createdBy(authenticatedUser).build();
-
-        when(sessionRepository.findById(anyLong())).thenReturn(Optional.of(session));
-        List<String> participants = sessionService.addParticipants(1L, List.of("new_participant@example.com"));
-
-        assertTrue(participants.contains("new_participant@example.com"));
-        verify(sessionRepository, times(1)).save(any(Session.class));
-    }
-
-    @Test
-    public void testAddParticipants_whenUserIsSessionParticipant_thenParticipantsAdded() {
-        Session session = Session.builder()
-                .createdBy("another_user@example.com")
-                .participants(List.of(authenticatedUser))
-                .build();
-
-        when(sessionRepository.findById(anyLong())).thenReturn(Optional.of(session));
-        List<String> participants = sessionService.addParticipants(1L, List.of("new_participant@example.com"));
-
-        assertTrue(participants.contains("new_participant@example.com"));
-        verify(sessionRepository, times(1)).save(any(Session.class));
-    }
-
-    @Test
-    public void testAddParticipants_whenUserNotSessionParticipantNorCreator_ShouldThrowUnauthorizedAccessException() {
-        Session session = Session.builder()
-                .createdBy("another_user_1@example.com")
-                .participants(List.of("another_user_2@example.com"))
-                .build();
-
-        when(sessionRepository.findById(anyLong())).thenReturn(Optional.of(session));
-
-        assertThrows(UnauthorizedAccessException.class, () ->
-                sessionService.addParticipants(1L, List.of("new_participant@example.com")));
-        verify(sessionRepository, never()).save(any(Session.class));
-    }
-
 
     @Test
     public void givenInProgressSession_whenUpdatingToCompletedStatus_thenStatusIsUpdatedAndSaved() {
@@ -114,6 +75,4 @@ class SessionServiceImplTest {
         verify(sessionRepository, never()).save(session);
     }
 
-//    @Test
-//    public void testGetSessions_whenUserIsEitherParticipantOrCreator_thenOnlySuchSessionsDisplayed() {}
 }

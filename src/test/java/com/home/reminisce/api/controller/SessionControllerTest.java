@@ -125,36 +125,4 @@ class SessionControllerTest {
         assertNull(response.getBody());
         verify(sessionService).updateSessionStatus(sessionId, SessionStatus.COMPLETED);
     }
-
-    @Test
-    public void testAddParticipant_whenUserIsCreator_ShouldReturnOkStatusAndUpdatedParticipants() {
-        // Arrange
-        List<String> updatedParticipants = List.of("new_participant@example.com");
-        List<String> newParticipants = List.of("new_participant@example.com");
-
-        // Act
-        when(sessionService.addParticipants(anyLong(), anyList())).thenReturn(updatedParticipants);
-        ResponseEntity<?> response = sessionController.addParticipants(1L, newParticipants);
-
-        // Assert
-        verify(sessionService, times(1)).addParticipants(1L, newParticipants);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assert response.getBody().equals(updatedParticipants);
-    }
-
-    @Test
-    public void testAddParticipant_whenUserNotSessionParticipantNorCreator_ShouldReturnForbiddenStatusAndErrorMessage() {
-        // Arrange
-        String errorMessage = "You are not authorized to add participants to this session.";
-
-        // Act
-        doThrow(new UnauthorizedAccessException(errorMessage)).when(sessionService)
-                .addParticipants(anyLong(), anyList());
-        ResponseEntity<?> response = sessionController.addParticipants(1L, List.of("new_participant@example.com"));
-
-        // Assert
-        verify(sessionService, times(1)).addParticipants(1L, List.of("new_participant@example.com"));
-        assert response.getStatusCode() == HttpStatus.FORBIDDEN;
-        assert response.getBody().equals(errorMessage);
-    }
 }

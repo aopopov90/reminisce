@@ -58,7 +58,7 @@ class ParticipationServiceTest {
         participationService.addParticipations(1L, List.of("new_participant@example.com"));
 
         verify(sessionService, times(1)).findById(anyLong());
-        verify(participationRepository, never()).findBySessionId(anyIterable());
+        verify(participationRepository, never()).findBySessionId(anyLong());
         verify(participationRepository, times(1)).saveAll(anyIterable());
     }
 
@@ -68,11 +68,11 @@ class ParticipationServiceTest {
         Participation participation = Participation.builder().participantName(authenticatedUser).build();
 
         when(sessionService.findById(anyLong())).thenReturn(session);
-        when(participationRepository.findBySessionId(anyIterable())).thenReturn(List.of(participation));
+        when(participationRepository.findBySessionId(anyLong())).thenReturn(List.of(participation));
         participationService.addParticipations(1L, List.of("new_participant@example.com"));
 
         verify(sessionService, times(1)).findById(anyLong());
-        verify(participationRepository, times(1)).findBySessionId(anyIterable());
+        verify(participationRepository, times(1)).findBySessionId(anyLong());
         verify(participationRepository, times(1)).saveAll(anyIterable());
     }
 
@@ -82,13 +82,13 @@ class ParticipationServiceTest {
         Participation participation = Participation.builder().participantName("another_user@example.com").build();
 
         when(sessionService.findById(anyLong())).thenReturn(session);
-        when(participationRepository.findBySessionId(anyIterable())).thenReturn(List.of(participation));
+        when(participationRepository.findBySessionId(anyLong())).thenReturn(List.of(participation));
 
         assertThrows(UnauthorizedAccessException.class, () ->
                 participationService.addParticipations(1L, List.of("new_participant@example.com")));
 
         verify(sessionService, times(1)).findById(anyLong());
-        verify(participationRepository, times(1)).findBySessionId(anyIterable());
+        verify(participationRepository, times(1)).findBySessionId(anyLong());
         verify(participationRepository, never()).saveAll(anyIterable());
     }
 
@@ -100,7 +100,7 @@ class ParticipationServiceTest {
         participationService.deleteParticipations(1L, List.of("participant1@example.com"));
 
         verify(sessionService, times(1)).findById(anyLong());
-        verify(participationRepository, never()).findBySessionId(anyIterable());
+        verify(participationRepository, never()).findBySessionId(anyLong());
         verify(participationRepository, times(1))
                 .deleteBySessionIdAndParticipantNameIn(1L, List.of("participant1@example.com"));
     }
@@ -111,11 +111,11 @@ class ParticipationServiceTest {
         Participation participation = Participation.builder().participantName(authenticatedUser).build();
 
         when(sessionService.findById(anyLong())).thenReturn(session);
-        when(participationRepository.findBySessionId(anyIterable())).thenReturn(List.of(participation));
+        when(participationRepository.findBySessionId(anyLong())).thenReturn(List.of(participation));
         participationService.deleteParticipations(1L, List.of("participant1@example.com"));
 
         verify(sessionService, times(1)).findById(anyLong());
-        verify(participationRepository, times(1)).findBySessionId(anyIterable());
+        verify(participationRepository, times(1)).findBySessionId(anyLong());
         verify(participationRepository, times(1))
                 .deleteBySessionIdAndParticipantNameIn(1L, List.of("participant1@example.com"));
     }
@@ -126,13 +126,13 @@ class ParticipationServiceTest {
         Participation participation = Participation.builder().participantName("another_user@example.com").build();
 
         when(sessionService.findById(anyLong())).thenReturn(session);
-        when(participationRepository.findBySessionId(anyIterable())).thenReturn(List.of(participation));
+        when(participationRepository.findBySessionId(anyLong())).thenReturn(List.of(participation));
 
         assertThrows(UnauthorizedAccessException.class, () ->
                 participationService.deleteParticipations(1L, List.of("participant1@example.com")));
 
         verify(sessionService, times(1)).findById(anyLong());
-        verify(participationRepository, times(1)).findBySessionId(anyIterable());
+        verify(participationRepository, times(1)).findBySessionId(anyLong());
         verify(participationRepository, never())
                 .deleteBySessionIdAndParticipantNameIn(1L, List.of("participant1@example.com"));
     }

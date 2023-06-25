@@ -60,7 +60,7 @@ class ParticipationServiceNoAuthTest {
                 participationService.addParticipations(1L, List.of("new_participant@example.com")));
 
         verify(sessionService, times(1)).findById(anyLong());
-        verify(participationRepository, never()).findBySessionId(anyIterable());
+        verify(participationRepository, never()).findBySessionId(anyLong());
         verify(participationRepository, never()).saveAll(anyIterable());
     }
 
