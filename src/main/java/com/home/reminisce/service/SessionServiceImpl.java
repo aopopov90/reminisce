@@ -2,16 +2,22 @@ package com.home.reminisce.service;
 
 import com.home.reminisce.api.model.SessionRequest;
 import com.home.reminisce.exceptions.UnauthorizedAccessException;
+import com.home.reminisce.model.Participation;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.model.SessionStatus;
+import com.home.reminisce.repository.ParticipationRepository;
 import com.home.reminisce.repository.SessionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -19,8 +25,11 @@ public class SessionServiceImpl implements SessionService {
 
     private final SessionRepository sessionRepository;
 
-    public SessionServiceImpl(SessionRepository sessionRepository) {
+    private final ParticipationRepository participationRepository;
+
+    public SessionServiceImpl(SessionRepository sessionRepository, ParticipationRepository participationRepository) {
         this.sessionRepository = sessionRepository;
+        this.participationRepository = participationRepository;
     }
 
     public Session findById(long id) {
@@ -40,7 +49,13 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public List<Session> getAll() {
-        return sessionRepository.findAll();
+        String authenticatedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Session> sessionsCreatorOf = sessionRepository.findByCreatedBy(authenticatedUser);
+        List<Participation> participations = participationRepository.findByParticipantName(authenticatedUser);
+        List<Session> sessionsParticipantOf = sessionRepository.findAllById(
+                participations.stream().map(participation -> participation.getSessionId()).collect(Collectors.toList())
+        );
+        return Stream.concat(sessionsCreatorOf.stream(), sessionsParticipantOf.stream()).collect(Collectors.toList());
     }
 
     public Session createSession(SessionRequest sessionRequest) {
@@ -69,9 +84,15 @@ public class SessionServiceImpl implements SessionService {
         }
     }
 
+    @Override
+    public Page<Session> getPaginatedSessions(Pageable pageable) {
+        return sessionRepository.findAll(pageable);
+    }
+
     private boolean isAuthorizedToEditSession(Session session) {
         String authenticatedUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        return Optional.ofNullable(session.getCreatedBy()).orElse("").equals(authenticatedUser);
+        return Optional.ofNullable(session.getCreatedBy()).orElse("").equals(authenticatedUser)
+                || participationRepository.findBySessionIdAndParticipantName(session.getId(), authenticatedUser).isPresent();
     }
 
 

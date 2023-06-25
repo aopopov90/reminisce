@@ -7,6 +7,8 @@ import com.home.reminisce.model.SessionStatus;
 import com.home.reminisce.service.SessionService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -51,5 +53,10 @@ public class SessionController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/sessions_p")
+    public Page<Session> getSessions(Pageable pageable) throws Exception {
+        return sessionService.getPaginatedSessions(pageable);
     }
 }
