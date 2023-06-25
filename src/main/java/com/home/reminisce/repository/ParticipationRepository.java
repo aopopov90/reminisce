@@ -1,6 +1,7 @@
 package com.home.reminisce.repository;
 
 import com.home.reminisce.model.Participation;
+import com.home.reminisce.model.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,6 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
     void deleteBySessionIdAndParticipantNameIn(Long sessionId, List<String> participantNames);
 
     Optional<Participation> findBySessionIdAndParticipantName(Long sessionId, String participantNames);
+
+    List<Participation> findByParticipantName(String participantName);
 }

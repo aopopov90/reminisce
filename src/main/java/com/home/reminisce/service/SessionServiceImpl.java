@@ -2,6 +2,7 @@ package com.home.reminisce.service;
 
 import com.home.reminisce.api.model.SessionRequest;
 import com.home.reminisce.exceptions.UnauthorizedAccessException;
+import com.home.reminisce.model.Participation;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.model.SessionStatus;
 import com.home.reminisce.repository.ParticipationRepository;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -44,7 +47,13 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public List<Session> getAll() {
-        return sessionRepository.findAll();
+        String authenticatedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Session> sessionsCreatorOf = sessionRepository.findByCreatedBy(authenticatedUser);
+        List<Participation> participations = participationRepository.findByParticipantName(authenticatedUser);
+        List<Session> sessionsParticipantOf = sessionRepository.findAllById(
+                participations.stream().map(participation -> participation.getSessionId()).collect(Collectors.toList())
+        );
+        return Stream.concat(sessionsCreatorOf.stream(), sessionsParticipantOf.stream()).collect(Collectors.toList());
     }
 
     public Session createSession(SessionRequest sessionRequest) {
