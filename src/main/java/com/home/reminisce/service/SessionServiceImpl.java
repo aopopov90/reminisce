@@ -9,6 +9,8 @@ import com.home.reminisce.repository.ParticipationRepository;
 import com.home.reminisce.repository.SessionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -80,6 +82,11 @@ public class SessionServiceImpl implements SessionService {
         } else {
             return session;
         }
+    }
+
+    @Override
+    public Page<Session> getPaginatedSessions(Pageable pageable) {
+        return sessionRepository.findAll(pageable);
     }
 
     private boolean isAuthorizedToEditSession(Session session) {
