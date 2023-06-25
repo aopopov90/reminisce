@@ -9,7 +9,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,6 +72,6 @@ public class ParticipationServiceImpl implements ParticipationService {
         String authenticatedUser = SecurityContextHolder.getContext().getAuthentication().getName();
         return Optional.ofNullable(session.getCreatedBy()).orElse("").equals(authenticatedUser)
                 || getParticipations(session.getId()).stream()
-                    .anyMatch(participation -> participation.getParticipantName().equals(authenticatedUser));
+                .anyMatch(participation -> participation.getParticipantName().equals(authenticatedUser));
     }
 }
