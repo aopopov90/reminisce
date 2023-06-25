@@ -1,8 +1,8 @@
 package com.home.reminisce.service;
 
-import com.home.reminisce.exceptions.UnauthorizedAccessException;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.model.SessionStatus;
+import com.home.reminisce.repository.ParticipationRepository;
 import com.home.reminisce.repository.SessionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,6 +29,9 @@ class SessionServiceImplTest {
 
     @Mock
     private ParticipationService participationService;
+
+    @Mock
+    private ParticipationRepository participationRepository;
 
     @InjectMocks
     private SessionServiceImpl sessionService;
@@ -49,7 +51,7 @@ class SessionServiceImplTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getName()).thenReturn(authenticatedUser);
 
-        sessionService = new SessionServiceImpl(sessionRepository);
+        sessionService = new SessionServiceImpl(sessionRepository, participationRepository);
     }
 
     @Test

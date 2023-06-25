@@ -4,6 +4,7 @@ import com.home.reminisce.api.model.SessionRequest;
 import com.home.reminisce.exceptions.UnauthorizedAccessException;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.model.SessionStatus;
+import com.home.reminisce.repository.ParticipationRepository;
 import com.home.reminisce.repository.SessionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +20,11 @@ public class SessionServiceImpl implements SessionService {
 
     private final SessionRepository sessionRepository;
 
-    public SessionServiceImpl(SessionRepository sessionRepository) {
+    private final ParticipationRepository participationRepository;
+
+    public SessionServiceImpl(SessionRepository sessionRepository, ParticipationRepository participationRepository) {
         this.sessionRepository = sessionRepository;
+        this.participationRepository = participationRepository;
     }
 
     public Session findById(long id) {
@@ -71,7 +75,8 @@ public class SessionServiceImpl implements SessionService {
 
     private boolean isAuthorizedToEditSession(Session session) {
         String authenticatedUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        return Optional.ofNullable(session.getCreatedBy()).orElse("").equals(authenticatedUser);
+        return Optional.ofNullable(session.getCreatedBy()).orElse("").equals(authenticatedUser)
+                || participationRepository.findBySessionIdAndParticipantName(session.getId(), authenticatedUser).isPresent();
     }
 
 
