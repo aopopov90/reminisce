@@ -34,6 +34,11 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    public boolean sessionExists(long sessionId) {
+        return sessionRepository.findById(sessionId).isPresent();
+    }
+
+    @Override
     public List<Session> getAll() {
         return sessionRepository.findAll();
     }
@@ -85,5 +90,6 @@ public class SessionServiceImpl implements SessionService {
         return Optional.ofNullable(session.getCreatedBy()).orElse("").equals(authenticatedUser)
                 || Optional.ofNullable(session.getParticipants()).orElse(Collections.emptyList()).contains(authenticatedUser);
     }
+
 
 }

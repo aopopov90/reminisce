@@ -12,6 +12,8 @@ public interface SessionService {
 
     List<Session> getAll();
 
+    boolean sessionExists(long sessionId);
+
     Session createSession(SessionRequest sessionRequest);
 
     Session updateSessionStatus(long id, SessionStatus sessionStatus);
