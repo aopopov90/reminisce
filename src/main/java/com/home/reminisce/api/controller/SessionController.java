@@ -52,16 +52,4 @@ public class SessionController {
             return ResponseEntity.notFound().build();
         }
     }
-
-    @PostMapping("/sessions/{sessionId}/participants")
-    public ResponseEntity<?> addParticipants(@PathVariable("sessionId") long sessionId, @RequestBody List<String> participants) {
-        try {
-            List<String> updatedParticipants = sessionService.addParticipants(sessionId, participants);
-            return ResponseEntity.ok(updatedParticipants);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (UnauthorizedAccessException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        }
-    }
 }

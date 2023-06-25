@@ -29,8 +29,6 @@ public class Session {
     @Enumerated(EnumType.STRING)
     private SessionStatus status;
 
-    private List<String> participants;
-
     @OneToMany
     @JoinColumn(name = "sessionId")
     private List<Comment> comments;
