@@ -1,8 +1,6 @@
 package com.home.reminisce.api.controller;
 
-import com.home.reminisce.api.model.CommentRequest;
 import com.home.reminisce.api.model.SessionRequest;
-import com.home.reminisce.exceptions.UnauthorizedAccessException;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.model.SessionStatus;
 import com.home.reminisce.service.SessionService;
@@ -20,8 +18,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SessionControllerTest {
