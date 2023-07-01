@@ -33,6 +33,14 @@ Note: lookup pg-reminisce container IP by inspecting the Bridge network:
 docker network inspect bridge
 ```
 
+### CloudRun
+```bash
+gcloud run deploy reminisce \
+    --image aopopov/reminisce \
+    --platform managed \
+    --set-env-vars=pg_password=<password>
+```
+
 ### Liquibase
 
 Generate changelog
@@ -43,4 +51,15 @@ liquibase generatechangelog --password=<password>
 Update
 ```bash
 liquibase update --password=<password>
+```
+
+### Cloud-sql-proxy
+```bash
+cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth
+```
+
+### When app connects to CloudSQL directly
+
+```bash
+gcloud auth default-credentials login
 ```
