@@ -15,3 +15,20 @@ Accessing
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
+
+### Containerizing
+
+Build and push
+```
+gradle jib -image aopopov/reminisce
+```
+
+Deploy locally:
+```
+docker run --name reminisce -e pg_password=1234 -d -p 8080:8080 aopopov/reminisce
+```
+
+Note: lookup pg-reminisce container IP by inspecting the Bridge network:
+```agsl
+docker network inspect bridge
+```
