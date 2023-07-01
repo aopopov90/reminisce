@@ -32,3 +32,15 @@ Note: lookup pg-reminisce container IP by inspecting the Bridge network:
 ```agsl
 docker network inspect bridge
 ```
+
+### Liquibase
+
+Generate changelog
+```bash
+liquibase generatechangelog --password=<password>
+```
+
+Update
+```bash
+liquibase update --password=<password>
+```
