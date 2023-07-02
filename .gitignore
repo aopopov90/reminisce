@@ -12,10 +12,6 @@
 # Maven build directories
 target/
 
-# Gradle files
-gradle/wrapper/gradle-wrapper.jar
-gradle/wrapper/gradle-wrapper.properties
-
 # Spring Boot generated files
 spring-boot-*.log
 
