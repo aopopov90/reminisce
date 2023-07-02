@@ -9,7 +9,7 @@ permissions:
   id-token: 'write'
 
 jobs:
-  lint:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
