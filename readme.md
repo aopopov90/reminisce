@@ -25,7 +25,7 @@ gradle jib -image aopopov/reminisce
 
 ```bash
 gcloud auth application-default login
-./gradlew jib -image us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce
+./gradlew jib --image us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce
 ```
 
 Deploy locally:
