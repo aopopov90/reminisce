@@ -44,7 +44,7 @@ docker network inspect bridge
 gcloud run deploy reminisce \
     --image us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce \
     --platform managed \
-    --set-env-vars=pg_password=<password>
+    --set-env-vars=PG_PASSWORD=changeit
 ```
 
 ### Liquibase
