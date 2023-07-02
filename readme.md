@@ -75,6 +75,7 @@ gcloud auth application-default login
 Create SA:
 ```bash
 export PROJECT_ID="impactful-mode-268210"
+export PROJECT_NUMBER="972321173961"
 export SA_NAME="gh-reminisce"
 export SA_ID="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 gcloud config set project ${PROJECT_ID}
@@ -95,6 +96,11 @@ for role in "${roles[@]}"; do
     --member="serviceAccount:${SA_ID}" \
     --role=${role}
 done 
+
+# allow GH SA to act as a runtime SA
+gcloud iam service-accounts add-iam-policy-binding "${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+    --member "serviceAccount:${SA_ID}" \
+    --role "roles/iam.serviceAccountUser"
 ```
 
 Enable the IAM Credentials API:
