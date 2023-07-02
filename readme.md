@@ -23,6 +23,11 @@ Build and push
 gradle jib -image aopopov/reminisce
 ```
 
+```bash
+gcloud auth application-default login
+./gradlew jib -image us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce
+```
+
 Deploy locally:
 ```
 docker run --name reminisce -e pg_password=1234 -d -p 8080:8080 aopopov/reminisce
@@ -34,9 +39,10 @@ docker network inspect bridge
 ```
 
 ### CloudRun
+
 ```bash
 gcloud run deploy reminisce \
-    --image aopopov/reminisce \
+    --image us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce \
     --platform managed \
     --set-env-vars=pg_password=<password>
 ```
@@ -61,5 +67,5 @@ cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth
 ### When app connects to CloudSQL directly
 
 ```bash
-gcloud auth default-credentials login
+gcloud auth application-default login
 ```
