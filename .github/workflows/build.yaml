@@ -32,8 +32,8 @@ jobs:
       - name: Build
         id: build
         run: |-
-          gradle build
-          gradle jib -image us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce
+          ./gradlew build
+          ./gradlew jib -image us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce
 
       - name: Use the version
         run: |
