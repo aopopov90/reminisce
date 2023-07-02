@@ -3,8 +3,6 @@ name: Git Version
 
 on:
   push:
-    branches:
-      - *
 
 jobs:
   lint:
