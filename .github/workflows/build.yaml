@@ -38,8 +38,10 @@ jobs:
       - name: Build
         id: build
         run: |-
-          ./gradlew build
-          ./gradlew jib -image us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce
+#          ./gradlew build
+          ./gradlew test jib \
+            -g $HOME/.gradle \
+            -image us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce
 
       - name: Use the version
         run: |
