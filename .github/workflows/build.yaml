@@ -49,6 +49,7 @@ jobs:
       - name: test
         run: |-
           curl -v localhost:9090/readiness
+          ps aux | grep 5432
 #          curl -v localhost:5432
 
       - uses: liquibase-github-actions/update@v4.23.0
