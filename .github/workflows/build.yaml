@@ -40,7 +40,7 @@ jobs:
             if [ "$response" == "200" ]; then
               echo "Endpoint is ready"
               break
-          fi
+            fi
         
             echo "Waiting for endpoint to be ready..."
             sleep 5
