@@ -35,7 +35,12 @@ jobs:
           chmod +x cloud-sql-proxy
           ./cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth --health-check --port 5432 &
           sleep 10
-          curl -v localhost:5432
+          curl -o liquibase.tar.gz https://github.com/liquibase/liquibase/releases/download/v4.23.0/liquibase-4.23.0.tar.gz
+          tar xvf liquibase.tar.gz 
+          chmod +x liquibase
+          liquibase update --password ${{ secrets.PG_PASSWORD }}
+          
+
 #          while true; do
 #            response=$(curl -s -w "%{http_code}" -o /dev/null "http://localhost:9090/readiness")
 #            if [ "$response" == "200" ]; then
