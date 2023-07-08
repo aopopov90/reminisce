@@ -40,11 +40,12 @@ jobs:
       - name: test
         run: |-
           curl -v localhost:9090/readiness
+          curl -v localhost:5432
 
       - uses: liquibase-github-actions/update@v4.23.0
         with:
           changelogFile: "db/changelog/changelog-root.yaml"
-          url: "jdbc:postgresql://localhost:5432/postgres"
+          url: "jdbc:postgresql://127.0.0.1:5432/postgres"
           password: ${{ secrets.PG_PASSWORD }}
           username: "postgres"
 
