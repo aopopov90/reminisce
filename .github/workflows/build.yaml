@@ -22,6 +22,13 @@ jobs:
         id: version
         uses: codacy/git-version@2.7.1
 
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: 'projects/972321173961/locations/global/workloadIdentityPools/gh-reminisce/providers/gh-reminisce-provider'
+          service_account: 'gh-reminisce@impactful-mode-268210.iam.gserviceaccount.com'
+
       - name: Launch cloud-sql-proxy
         run: |-
           curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.4.0/cloud-sql-proxy.linux.amd64
@@ -36,12 +43,6 @@ jobs:
           password: ${{ secrets.PG_PASSWORD }}
           username: "postgres"
 
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          workload_identity_provider: 'projects/972321173961/locations/global/workloadIdentityPools/gh-reminisce/providers/gh-reminisce-provider'
-          service_account: 'gh-reminisce@impactful-mode-268210.iam.gserviceaccount.com'
 
       - name: Set-up Java 17
         uses: actions/setup-java@v3
