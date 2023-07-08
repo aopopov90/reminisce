@@ -33,9 +33,19 @@ jobs:
         run: |-
           curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.4.0/cloud-sql-proxy.linux.amd64
           chmod +x cloud-sql-proxy
-          ./cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth --health-check &
-          sleep 10
-          curl -v localhost:9090/readiness
+          ./cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth --health-check --port 5432 &
+          
+          while true; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:9090/readiness")
+            if [ "$response" == "200" ]; then
+              echo "Endpoint is ready"
+              break
+          fi
+        
+            echo "Waiting for endpoint to be ready..."
+            sleep 5
+          done
+
 
       - name: test
         run: |-
