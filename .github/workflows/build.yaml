@@ -50,6 +50,7 @@ jobs:
           image: us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce:${{ steps.version.outputs.version }}
           env_vars: |
             PG_PASSWORD=${{ secrets.PG_PASSWORD }}
+            SPRING_PROFILES_ACTIVE=staging
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
