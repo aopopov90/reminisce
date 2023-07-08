@@ -22,6 +22,22 @@ jobs:
         id: version
         uses: codacy/git-version@2.7.1
 
+      - name: Launch cloud-sql-proxy
+        run: |-
+          mkdir $RUNNER_TEMP/bin
+          curl -o $RUNNER_TEMP/bin/cloud-sql-proxy \
+            cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.4.0/cloud-sql-proxy.linux.amd64 \
+            && chmod +x $RUNNER_TEMP/bin/cloud-sql-proxy
+          echo "$RUNNER_TEMP/bin" >> $GITHUB_PATH
+          cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth &
+
+      - uses: liquibase-github-actions/update@v4.23.0
+        with:
+          changelogFile: "db/changelog/changelog-root.yaml"
+          url: "jdbc:postgresql://localhost:5432/postgres"
+          password: ${{ secrets.PG_PASSWORD }}
+          username: "postgres"
+
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
@@ -54,3 +70,4 @@ jobs:
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
+
