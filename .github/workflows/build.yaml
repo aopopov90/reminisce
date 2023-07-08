@@ -38,7 +38,7 @@ jobs:
           curl -L -o liquibase.tar.gz https://github.com/liquibase/liquibase/releases/download/v4.23.0/liquibase-4.23.0.tar.gz
           tar xvf liquibase.tar.gz 
           chmod +x liquibase
-          liquibase update --password ${{ secrets.PG_PASSWORD }}
+          ./liquibase update --password ${{ secrets.PG_PASSWORD }}
           
 
 #          while true; do
