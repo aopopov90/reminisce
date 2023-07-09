@@ -36,15 +36,16 @@ jobs:
           version_liquibase: '4.23.0'
           version_cloud_sql_proxy: '2.4.0'
         run: |-
-          set +e
           # start up cloud-sql-proxy
           curl -s -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v${version_cloud_sql_proxy}/cloud-sql-proxy.linux.amd64
           chmod +x cloud-sql-proxy
           ./cloud-sql-proxy ${{ vars.PROJECT_ID }}:${{ vars.CLOUD_SQL_REGION }}:${{ vars.CLOUD_SQL_INSTANCE }} --gcloud-auth --health-check --port 5433 &
+          set +e
           while true; do
             if [ "$(curl -s -w "%{http_code}" -o /dev/null "http://localhost:9090/readiness")" == "200" ]; then break; fi
             echo "Waiting for cloud-sql-proxy to be ready..." && sleep 5
-          done 
+          done
+          set -e
           
           # download liquibase
           curl -Ls -o liquibase.tar.gz https://github.com/liquibase/liquibase/releases/download/v${version_liquibase}/liquibase-${version_liquibase}.tar.gz

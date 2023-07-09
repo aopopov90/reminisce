@@ -1,5 +1,4 @@
-
--- changeset antonpopov:1-1
+-- changeset antonpopov:1688829895635-1
 CREATE SEQUENCE public.temp_seq
 	INCREMENT BY 1
 	MINVALUE 1
@@ -7,4 +6,3 @@ CREATE SEQUENCE public.temp_seq
 	START 1
 	CACHE 1
 	NO CYCLE;
-GRANT ALL ON SEQUENCE public.temp_seq TO ;
