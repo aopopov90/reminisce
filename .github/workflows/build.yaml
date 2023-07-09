@@ -35,10 +35,7 @@ jobs:
           chmod +x cloud-sql-proxy
           ./cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth --health-check --port 5432 &
           while true; do
-            echo "about to hit /readiness"
-            curl -v "http://localhost:9090/readiness"
-            response=$(curl -s -w "%{http_code}" -o /dev/null "http://localhost:9090/readiness")
-            echo "response: $response"
+            response=$(! curl -s -w "%{http_code}" -o /dev/null "http://localhost:9090/readiness")
             if [ "$response" == "200" ]; then
               echo "Endpoint is ready"
               break
