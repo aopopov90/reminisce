@@ -33,14 +33,14 @@ jobs:
 
       - name: Execute Liqubase
         env:
-          version_liquibase: "4.23.0"
-          version_cloud_sql_proxy: "2.4.0"
+          version_liquibase: '4.23.0'
+          version_cloud_sql_proxy: '2.4.0'
         run: |-
           set +e
           # start up cloud-sql-proxy
           curl -s -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v${version_cloud_sql_proxy}/cloud-sql-proxy.linux.amd64
           chmod +x cloud-sql-proxy
-          ./cloud-sql-proxy ${{ vars.DOCKER_REPO_REGION }}:${{ vars.CLOUD_SQL_REGION }}:reminisce --gcloud-auth --health-check --port 5433 &
+          ./cloud-sql-proxy ${{ vars.PROJECT_ID }}:${{ vars.CLOUD_SQL_REGION }}:${{ vars.CLOUD_SQL_INSTANCE }} --gcloud-auth --health-check --port 5433 &
           while true; do
             if [ "$(curl -s -w "%{http_code}" -o /dev/null "http://localhost:9090/readiness")" == "200" ]; then
               echo "cloud-sql-proxy is ready"
@@ -73,8 +73,8 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v1
         with:
-          service: 'reminisce'
-          image: ${{ vars.DOCKER_REPO_REGION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/reminisce/reminisce:${{ steps.version.outputs.version }}
+          service: ${{ vars.DOCKER_REPO_NAME }}
+          image: ${{ vars.DOCKER_REPO_REGION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/${{ vars.DOCKER_REPO_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ steps.version.outputs.version }}
           env_vars: |
             PG_PASSWORD=${{ secrets.PG_PASSWORD }}
             SPRING_PROFILES_ACTIVE=staging
