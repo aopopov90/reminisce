@@ -1,4 +1,5 @@
-name: Build and deploy to CloudRun and CloudSQL
+# .github/workflows/version.yml
+name: Git Version
 
 on:
   push:
