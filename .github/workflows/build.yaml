@@ -31,11 +31,13 @@ jobs:
 
       - name: Launch cloud-sql-proxy
         run: |-
-          curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.4.0/cloud-sql-proxy.linux.amd64
+          curl -s -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.4.0/cloud-sql-proxy.linux.amd64
           chmod +x cloud-sql-proxy
           ./cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth --health-check --port 5432 &
           while true; do
+            echo "about to hit /readiness"
             response=$(curl -s -w "%{http_code}" -o /dev/null "http://localhost:9090/readiness")
+            echo "response: $response"
             if [ "$response" == "200" ]; then
               echo "Endpoint is ready"
               break
@@ -43,7 +45,7 @@ jobs:
             echo "Waiting for endpoint to be ready..."
             sleep 5
           done               
-          curl -L -o liquibase.tar.gz https://github.com/liquibase/liquibase/releases/download/v4.23.0/liquibase-4.23.0.tar.gz
+          curl -Ls -o liquibase.tar.gz https://github.com/liquibase/liquibase/releases/download/v4.23.0/liquibase-4.23.0.tar.gz
           tar -zxvf liquibase.tar.gz liquibase && chmod +x liquibase
           ./liquibase update --password ${{ secrets.PG_PASSWORD }}
           ./liquibase tag --tag ${{ steps.version.outputs.version }}
