@@ -1,4 +1,5 @@
-name: Build and deploy to CloudRun and CloudSQL
+# .github/workflows/version.yml
+name: Git Version
 
 on:
   push:
@@ -41,9 +42,14 @@ jobs:
           chmod +x cloud-sql-proxy
           ./cloud-sql-proxy ${{ vars.PROJECT_ID }}:${{ vars.CLOUD_SQL_REGION }}:${{ vars.CLOUD_SQL_INSTANCE }} --gcloud-auth --health-check --port 5433 &
           set +e
+          counter=0
           while true; do
             if [ "$(curl -s -w "%{http_code}" -o /dev/null "http://localhost:9090/readiness")" == "200" ]; then break; fi
             echo "Waiting for cloud-sql-proxy to be ready..." && sleep 5
+            counter=$((counter+1))
+            if [ "$counter" -eq 10 ]; then
+              echo "Maximum number of attempts reached. Exiting..." && exit 1
+            fi
           done
           set -e
           
