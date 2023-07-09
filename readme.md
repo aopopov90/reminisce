@@ -44,7 +44,8 @@ docker network inspect bridge
 gcloud run deploy reminisce \
     --image us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce \
     --platform managed \
-    --set-env-vars=PG_PASSWORD=changeit
+    --set-env-vars=PG_PASSWORD=changeit \
+    --set-env-vars=SPRING_PROFILES_ACTIVE=staging
 ```
 
 ### Liquibase
@@ -61,7 +62,7 @@ liquibase update --password=<password>
 
 ### Cloud-sql-proxy
 ```bash
-cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth
+cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth --port 5433
 ```
 
 ### When app connects to CloudSQL directly
