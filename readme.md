@@ -62,7 +62,7 @@ liquibase update --password=<password>
 
 ### Cloud-sql-proxy
 ```bash
-cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth
+cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth --port 5433
 ```
 
 ### When app connects to CloudSQL directly
