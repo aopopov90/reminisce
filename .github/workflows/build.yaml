@@ -2,8 +2,9 @@ name: Build and deploy to CloudRun and CloudSQL
 
 on:
   push:
-    - 'main'
-    - 'feature/**'
+    branches:
+      - 'main'
+      - 'feature/**'
 
 permissions:
   contents: 'read'
