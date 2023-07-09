@@ -47,7 +47,7 @@ jobs:
             echo "Waiting for cloud-sql-proxy to be ready..." && sleep 5
             counter=$((counter+1))
             if [ "$counter" -eq 10 ]; then
-              echo "Maximum number of attempts reached. Exiting..." && break
+              echo "Maximum number of attempts reached. Exiting..." && exit 1
             fi
           done
           set -e
