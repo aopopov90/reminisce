@@ -31,7 +31,7 @@ jobs:
           workload_identity_provider: ${{ vars.WI_PROVIDER }}
           service_account: ${{ vars.GH_SA }}
 
-      - name: Execute Liqubase
+      - name: Execute Liquibase
         env:
           version_liquibase: '4.23.0'
           version_cloud_sql_proxy: '2.4.0'
@@ -81,5 +81,5 @@ jobs:
             PG_PASSWORD=${{ secrets.PG_PASSWORD }}
             SPRING_PROFILES_ACTIVE=staging
 
-      - name: 'Print CloudRun end-point'
+      - name: Print CloudRun end-point
         run: 'curl "${{ steps.deploy.outputs.url }}"'

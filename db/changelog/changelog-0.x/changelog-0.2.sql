@@ -1,0 +1,10 @@
+
+-- changeset antonpopov:1-1
+CREATE SEQUENCE public.temp_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 9223372036854775807
+	START 1
+	CACHE 1
+	NO CYCLE;
+GRANT ALL ON SEQUENCE public.temp_seq TO ;
