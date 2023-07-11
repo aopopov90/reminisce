@@ -1,5 +1,4 @@
-# .github/workflows/version.yml
-name: Git Version
+name: maven build test
 
 on:
   push:
@@ -32,38 +31,38 @@ jobs:
           workload_identity_provider: ${{ vars.WI_PROVIDER }}
           service_account: ${{ vars.GH_SA }}
 
-      - name: Execute Liquibase
-        env:
-          version_liquibase: '4.23.0'
-          version_cloud_sql_proxy: '2.4.0'
-        run: |-
-          # start up cloud-sql-proxy
-          curl -s -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v${version_cloud_sql_proxy}/cloud-sql-proxy.linux.amd64
-          chmod +x cloud-sql-proxy
-          ./cloud-sql-proxy ${{ vars.PROJECT_ID }}:${{ vars.CLOUD_SQL_REGION }}:${{ vars.CLOUD_SQL_INSTANCE }} --gcloud-auth --health-check --port 5433 &
-          set +e
-          counter=0
-          while true; do
-            if [ "$(curl -s -w "%{http_code}" -o /dev/null "http://localhost:9090/readiness")" == "200" ]; then break; fi
-            echo "Waiting for cloud-sql-proxy to be ready..." && sleep 5
-            counter=$((counter+1))
-            if [ "$counter" -eq 10 ]; then
-              echo "Maximum number of attempts reached. Exiting..." && exit 1
-            fi
-          done
-          set -e
-          
-          # download liquibase
-          curl -Ls -o liquibase.tar.gz https://github.com/liquibase/liquibase/releases/download/v${version_liquibase}/liquibase-${version_liquibase}.tar.gz
-          tar -zxf liquibase.tar.gz && chmod +x liquibase
-          
-          # execute 'liquibase update'
-          ./liquibase update --password ${{ secrets.PG_PASSWORD }} | tee log
-          
-          # execute 'liquibase tag' if new changesets rolled out
-          if [[ "$(cat log | awk '/Run:/ {print $2}')" -gt 0 ]]; then
-            ./liquibase tag --tag ${{ steps.version.outputs.version }} --password ${{ secrets.PG_PASSWORD }}
-          fi
+#      - name: Execute Liquibase
+#        env:
+#          version_liquibase: '4.23.0'
+#          version_cloud_sql_proxy: '2.4.0'
+#        run: |-
+#          # start up cloud-sql-proxy
+#          curl -s -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v${version_cloud_sql_proxy}/cloud-sql-proxy.linux.amd64
+#          chmod +x cloud-sql-proxy
+#          ./cloud-sql-proxy ${{ vars.PROJECT_ID }}:${{ vars.CLOUD_SQL_REGION }}:${{ vars.CLOUD_SQL_INSTANCE }} --gcloud-auth --health-check --port 5433 &
+#          set +e
+#          counter=0
+#          while true; do
+#            if [ "$(curl -s -w "%{http_code}" -o /dev/null "http://localhost:9090/readiness")" == "200" ]; then break; fi
+#            echo "Waiting for cloud-sql-proxy to be ready..." && sleep 5
+#            counter=$((counter+1))
+#            if [ "$counter" -eq 10 ]; then
+#              echo "Maximum number of attempts reached. Exiting..." && exit 1
+#            fi
+#          done
+#          set -e
+#
+#          # download liquibase
+#          curl -Ls -o liquibase.tar.gz https://github.com/liquibase/liquibase/releases/download/v${version_liquibase}/liquibase-${version_liquibase}.tar.gz
+#          tar -zxf liquibase.tar.gz && chmod +x liquibase
+#
+#          # execute 'liquibase update'
+#          ./liquibase update --password ${{ secrets.PG_PASSWORD }} | tee log
+#
+#          # execute 'liquibase tag' if new changesets rolled out
+#          if [[ "$(cat log | awk '/Run:/ {print $2}')" -gt 0 ]]; then
+#            ./liquibase tag --tag ${{ steps.version.outputs.version }} --password ${{ secrets.PG_PASSWORD }}
+#          fi
 
       - name: Set-up Java 17
         uses: actions/setup-java@v3
@@ -74,9 +73,8 @@ jobs:
       - name: Build
         id: build
         run: |-
-          ./gradlew test
-          ./gradlew jib \
-            --image ${{ vars.DOCKER_REPO_REGION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/${{ vars.DOCKER_REPO_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ steps.version.outputs.version }}
+          ./mvnw jib:build \
+            -Djib.to.image=${{ vars.DOCKER_REPO_REGION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/${{ vars.DOCKER_REPO_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ steps.version.outputs.version }}
 
       - name: Deploy to CloudRun
         id: deploy
