@@ -73,7 +73,7 @@ jobs:
       - name: Build
         id: build
         run: |-
-          ./mvnw jib:build \
+          ./mvnw compile jib:build \
             -Djib.to.image=${{ vars.DOCKER_REPO_REGION }}-docker.pkg.dev/${{ vars.PROJECT_ID }}/${{ vars.DOCKER_REPO_NAME }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ steps.version.outputs.version }}
 
       - name: Deploy to CloudRun
