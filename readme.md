@@ -1,6 +1,6 @@
 ## Database
-```
-docker run --name pg-reminisce -e POSTGRES_PASSWORD=1234 -d -p 5432:5432 postgres
+```bash
+docker run --name us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce -e POSTGRES_PASSWORD=1234 -d -p 5432:5432 postgres
 ```
 
 ## API
@@ -21,13 +21,6 @@ http://localhost:8080/swagger-ui/index.html
 Set-up maven wrapper (run from IntelliJ):
 ```bash
 mvn -N wrapper:wrapper
-```
-
-Add main class in the pom.xml `spring-boot-maven-plugin` and `jib-maven-plugin`.
-
-```bash
-gcloud auth application-default login
-mvn compile jib:build -Djib.to.image=us-east1-docker.pkg.dev/impactful-mode-268210/reminisce/reminisce
 ```
 
 Deploy locally:
