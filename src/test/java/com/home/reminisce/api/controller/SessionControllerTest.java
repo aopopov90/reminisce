@@ -1,6 +1,7 @@
 package com.home.reminisce.api.controller;
 
 import com.home.reminisce.api.model.SessionRequest;
+import com.home.reminisce.exceptions.UnauthorizedAccessException;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.model.SessionStatus;
 import com.home.reminisce.service.SessionService;
@@ -15,11 +16,11 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SessionControllerTest {
@@ -123,4 +124,42 @@ class SessionControllerTest {
         assertNull(response.getBody());
         verify(sessionService).updateSessionStatus(sessionId, SessionStatus.COMPLETED);
     }
+
+    @Test
+    public void testDeleteSession_ValidSessionId_ShouldReturnOkStatusAndSuccessMessage() {
+        Long sessionId = 1L;
+
+        ResponseEntity<String> response = sessionController.deleteSession(sessionId);
+
+        verify(sessionService, times(1)).deleteSession(sessionId);
+        assert response.getStatusCode() == HttpStatus.OK;
+        assert response.getBody().equals("Session deleted successfully.");
+    }
+
+    @Test
+    public void testDeleteSession_InvalidSessionId_ShouldReturnNotFoundStatusAndErrorMessage() {
+        Long sessionId = 1L;
+        String errorMessage = "Session not found with ID" + sessionId;
+
+        doThrow(new NoSuchElementException(errorMessage)).when(sessionService).deleteSession(sessionId);
+        ResponseEntity<String> response = sessionController.deleteSession(sessionId);
+
+        verify(sessionService, times(1)).deleteSession(sessionId);
+        assert response.getStatusCode() == HttpStatus.NOT_FOUND;
+        assert response.getBody().equals(errorMessage);
+    }
+
+    @Test
+    public void testDeleteSession_UnauthorizedAccessException_ShouldReturnForbiddenStatusAndErrorMessage() {
+        Long commentId = 1L;
+        String errorMessage = "You are not authorized to delete this session.";
+
+        doThrow(new UnauthorizedAccessException(errorMessage)).when(sessionService).deleteSession(commentId);
+        ResponseEntity<String> response = sessionController.deleteSession(commentId);
+
+        verify(sessionService, times(1)).deleteSession(commentId);
+        assert response.getStatusCode() == HttpStatus.FORBIDDEN;
+        assert response.getBody().equals(errorMessage);
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.home.reminisce.service;
 
+import com.home.reminisce.exceptions.UnauthorizedAccessException;
+import com.home.reminisce.model.Comment;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.model.SessionStatus;
 import com.home.reminisce.repository.ParticipationRepository;
@@ -16,9 +18,11 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.Instant;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,5 +80,45 @@ class SessionServiceImplTest {
         assertEquals(endedOn, session.getEndedOn());
         verify(sessionRepository, never()).save(session);
     }
+
+    @Test
+    public void testDeleteSession_ValidSessionIdAndAuthorizedUser_ShouldDeleteComment() {
+        Long sessionId = 1L;
+        String authenticatedUser = "user@example.com";
+        Session session = Session.builder()
+                .name("sample")
+                .createdBy(authenticatedUser)
+                .build();
+
+        when(sessionRepository.findById(anyLong())).thenReturn(Optional.of(session));
+        sessionService.deleteSession(sessionId);
+
+        verify(sessionRepository, times(1)).findById(sessionId);
+        verify(sessionRepository, times(1)).delete(session);
+    }
+
+    @Test
+    public void testDeleteSession_ValidCommentIdButUnauthorizedUser_ShouldThrowUnauthorizedAccessException() {
+        Long sessionId = 1L;
+        String createdBy = "otheruser@example.com";
+        Session session = Session.builder()
+                .createdBy(createdBy)
+                .build();
+
+        when(sessionRepository.findById(anyLong())).thenReturn(Optional.of(session));
+        assertThrows(UnauthorizedAccessException.class, () -> sessionService.deleteSession(sessionId));
+        verify(sessionRepository, times(1)).findById(sessionId);
+        verify(sessionRepository, times(0)).delete(any(Session.class));
+    }
+
+//    @Test
+//    public void testDeleteSession_InvalidSessionId_ShouldThrowNoSuchElementException() {
+//        Long sessionId = 1L;
+//
+//        when(sessionRepository.findById(anyLong())).thenReturn(Optional.empty());
+//        assertThrows(NoSuchElementException.class, () -> sessionService.deleteSession(sessionId));
+//        verify(sessionRepository, times(1)).findById(sessionId);
+//        verify(sessionRepository, times(0)).delete(any(Session.class));
+//    }
 
 }

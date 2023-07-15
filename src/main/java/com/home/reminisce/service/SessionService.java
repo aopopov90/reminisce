@@ -20,5 +20,7 @@ public interface SessionService {
 
     Session updateSessionStatus(long id, SessionStatus sessionStatus);
 
+    void deleteSession(Long id);
+
     Page<Session> getPaginatedSessions(Pageable pageable);
 }

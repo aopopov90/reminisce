@@ -29,7 +29,7 @@ public class Session {
     @Enumerated(EnumType.STRING)
     private SessionStatus status;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "sessionId")
     private List<Comment> comments;
 }
