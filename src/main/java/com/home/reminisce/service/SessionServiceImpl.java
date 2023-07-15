@@ -2,6 +2,7 @@ package com.home.reminisce.service;
 
 import com.home.reminisce.api.model.SessionRequest;
 import com.home.reminisce.exceptions.UnauthorizedAccessException;
+import com.home.reminisce.model.Comment;
 import com.home.reminisce.model.Participation;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.model.SessionStatus;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -66,6 +68,7 @@ public class SessionServiceImpl implements SessionService {
                 .createdBy(SecurityContextHolder.getContext().getAuthentication().getName())
                 .status(SessionStatus.IN_PROGRESS)
                 .createdOn(Instant.now())
+                .comments(List.of(Comment.builder().createdOn(Instant.now()).authoredBy("reminisce").text("Enjoy your retro").build()))
                 .build());
     }
 
@@ -83,6 +86,21 @@ public class SessionServiceImpl implements SessionService {
             return sessionRepository.save(session);
         } else {
             return session;
+        }
+    }
+
+    @Override
+    public void deleteSession(Long id) {
+        Optional<Session> sessionOptional = sessionRepository.findById(id);
+        if (sessionOptional.isPresent()) {
+            Session session = sessionOptional.get();
+            if (session.getCreatedBy().equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+                sessionRepository.delete(sessionOptional.get());
+            } else {
+                throw new UnauthorizedAccessException("You are not authorized to delete this session.");
+            }
+        } else {
+            throw new NoSuchElementException("Session not found with ID" + id);
         }
     }
 
