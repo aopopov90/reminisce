@@ -1,5 +1,4 @@
-# .github/workflows/version.yml
-name: Git Version
+name: Build and deploy
 
 on:
   push:
