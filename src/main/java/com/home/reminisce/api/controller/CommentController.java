@@ -7,6 +7,9 @@ import com.home.reminisce.service.CommentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.NoSuchElementException;
@@ -17,20 +20,22 @@ import java.util.NoSuchElementException;
 public class CommentController {
 
     private final CommentService commentService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public CommentController(CommentService commentService) {
+    public CommentController(CommentService commentService, SimpMessagingTemplate messagingTemplate) {
         this.commentService = commentService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @PostMapping
     public ResponseEntity<?> createComment(@RequestBody CommentRequest commentRequest) {
         try {
             Comment createdComment = commentService.createComment(commentRequest);
+            messagingTemplate.convertAndSend("/topic/newComment", createdComment);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
         } catch (UnauthorizedAccessException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
-
     }
 
     @DeleteMapping("/{id}")
