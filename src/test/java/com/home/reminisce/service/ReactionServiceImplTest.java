@@ -46,7 +46,7 @@ public class ReactionServiceImplTest {
         when(authentication.getName()).thenReturn("user@example.com");
 
         reactionRepository = Mockito.mock(ReactionRepository.class);
-        reactionService = new ReactionServiceImpl(reactionRepository);
+        reactionService = new ReactionServiceImpl(reactionRepository, messagingTemplate);
     }
 
     @Test

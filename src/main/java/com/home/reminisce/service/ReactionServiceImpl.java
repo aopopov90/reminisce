@@ -7,6 +7,7 @@ import com.home.reminisce.repository.ReactionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,11 @@ import java.util.Optional;
 public class ReactionServiceImpl implements ReactionService {
 
     private final ReactionRepository reactionRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public ReactionServiceImpl(ReactionRepository reactionRepository) {
+    public ReactionServiceImpl(ReactionRepository reactionRepository, SimpMessagingTemplate messagingTemplate) {
         this.reactionRepository = reactionRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -40,14 +43,18 @@ public class ReactionServiceImpl implements ReactionService {
                 reactionRepository.delete(reactions.get(0));
             }
         }
-        return new ResponseEntity<>(reactionRepository.save(
-                Reaction.builder()
-                        .createdOn(Instant.now())
-                        .reactionType(reactionRequest.reactionType())
-                        .authoredBy(userEmail)
-                        .commentId(reactionRequest.commentId())
-                        .build()),
-                HttpStatus.CREATED);
+
+        Reaction createdReaction = reactionRepository.save(Reaction.builder()
+                .createdOn(Instant.now())
+                .reactionType(reactionRequest.reactionType())
+                .authoredBy(userEmail)
+                .commentId(reactionRequest.commentId())
+                .build());
+
+        // push new reaction to the websocket
+        messagingTemplate.convertAndSend("/topic/newReaction", createdReaction);
+
+        return new ResponseEntity<>(createdReaction, HttpStatus.CREATED);
     }
 
     @Override

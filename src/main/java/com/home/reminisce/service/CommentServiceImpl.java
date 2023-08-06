@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -39,6 +40,7 @@ public class CommentServiceImpl implements CommentService {
                 .categoryId(commentRequest.categoryId())
                 .authoredBy(SecurityContextHolder.getContext().getAuthentication().getName())
                 .createdOn(Instant.now())
+                .reactions(new ArrayList<>())
                 .build());
     }
 

@@ -38,11 +38,6 @@ public class CommentController {
         }
     }
 
-//    @SendTo("/topic/newComment")
-//    public Comment broadcastComment(@Payload Comment comment) {
-//        return comment;
-//    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteComment(@PathVariable Long id) {
         try {
