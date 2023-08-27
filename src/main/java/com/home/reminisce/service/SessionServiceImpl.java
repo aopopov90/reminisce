@@ -80,7 +80,7 @@ public class SessionServiceImpl implements SessionService {
     public Session updateSessionStatus(long id, SessionStatus status) {
         Session session = findById(id);
 
-        if (!isAuthorizedToViewSession(session)) {
+        if (!isAuthorizedToEditSession(session)) {
             throw new UnauthorizedAccessException("You are not authorized to update the status of this session.");
         }
 
