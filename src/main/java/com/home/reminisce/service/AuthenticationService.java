@@ -40,4 +40,11 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }
+
+    public AuthenticationResponse refresh(RefreshRequest refreshRequest) {
+        String username = jwtService.extractUserName(refreshRequest.getToken());
+        var user = userRepository.findByDisplayName(username).orElseThrow();
+        var jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder().token(jwtToken).build();
+    }
 }

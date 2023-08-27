@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.NoSuchElementException;
 
@@ -22,6 +23,8 @@ public class CommentControllerTest {
     @Mock
     private CommentService commentService;
 
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
     @InjectMocks
     private CommentController commentController;
 
@@ -39,6 +42,7 @@ public class CommentControllerTest {
                 .build();
 
         // Act
+        doNothing().when(messagingTemplate).convertAndSend(anyString(), any(Comment.class));
         when(commentService.createComment(any(CommentRequest.class))).thenReturn(createdComment);
         ResponseEntity<?> response = commentController.createComment(commentRequest);
 

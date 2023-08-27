@@ -39,6 +39,10 @@ public class SessionServiceImpl implements SessionService {
     public Session findById(long id) {
         Optional<Session> optionalSession = sessionRepository.findById(id);
 
+        if (!isAuthorizedToEditSession(optionalSession.get())) {
+            throw new UnauthorizedAccessException("You are not authorized to view this session.");
+        }
+
         if (optionalSession.isPresent()) {
             return optionalSession.get();
         } else {
@@ -115,5 +119,10 @@ public class SessionServiceImpl implements SessionService {
                 || participationRepository.findBySessionIdAndParticipantName(session.getId(), authenticatedUser).isPresent();
     }
 
+    private boolean isAuthorizedToViewSession(Session session) {
+        String authenticatedUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        return Optional.ofNullable(session.getCreatedBy()).orElse("").equals(authenticatedUser)
+                || participationRepository.findBySessionIdAndParticipantName(session.getId(), authenticatedUser).isPresent();
+    }
 
 }
