@@ -2,6 +2,7 @@ package com.home.reminisce.service;
 
 import com.home.reminisce.exceptions.UnauthorizedAccessException;
 import com.home.reminisce.model.Comment;
+import com.home.reminisce.model.Participation;
 import com.home.reminisce.model.Session;
 import com.home.reminisce.model.SessionStatus;
 import com.home.reminisce.repository.ParticipationRepository;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -98,7 +100,19 @@ class SessionServiceImplTest {
     }
 
     @Test
-    public void testDeleteSession_ValidCommentIdButUnauthorizedUser_ShouldThrowUnauthorizedAccessException() {
+    public void testGetSession_whenUserNotSessionParticipantNorCreator_ShouldThrowUnauthorizedAccessException() {
+        Session session = Session.builder().createdBy("another_user@example.com").build();
+        Participation participation = Participation.builder().participantName("another_user@example.com").build();
+
+        when(sessionRepository.findById(anyLong())).thenReturn(Optional.of(session));
+        when(participationRepository.findBySessionIdAndParticipantName(anyLong(), anyString()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(UnauthorizedAccessException.class, () -> sessionService.findById(session.getId()));
+        verify(sessionRepository, times(1)).findById(session.getId());
+    }
+    @Test
+    public void testDeleteSession_validSessionIdButUnauthorizedUser_ShouldThrowUnauthorizedAccessException() {
         Long sessionId = 1L;
         String createdBy = "otheruser@example.com";
         Session session = Session.builder()

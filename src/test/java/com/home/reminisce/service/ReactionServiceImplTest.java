@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +32,9 @@ public class ReactionServiceImplTest {
     private ReactionRepository reactionRepository;
 
     private ReactionServiceImpl reactionService;
+
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @Mock
     private SecurityContext securityContext;

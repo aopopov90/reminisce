@@ -2,6 +2,7 @@ package com.home.reminisce.api.controller;
 
 import com.home.reminisce.security.AuthenticationRequest;
 import com.home.reminisce.security.AuthenticationResponse;
+import com.home.reminisce.security.RefreshRequest;
 import com.home.reminisce.security.RegisterRequest;
 import com.home.reminisce.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,12 @@ public class AuthenticationController {
             @RequestBody AuthenticationRequest request
     ) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponse> refresh(
+            @RequestBody RefreshRequest request
+    ) {
+        return ResponseEntity.ok((authenticationService.refresh(request)));
     }
 }
