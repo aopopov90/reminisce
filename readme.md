@@ -60,6 +60,31 @@ Update
 liquibase update --password=<password>
 ```
 
+### Generating Liquibase changelog via diff-changelog
+
+This operation requires two database instances to be available:
+1. The local instance containing the latest version of schema (development)
+2. The reference instance. This will be a cloud instance running the latest stable version of the schema
+
+Firstly, ensure the dev database is up and running locally (via docker). This instance should be accessible on port 5432.
+The `liquibase.command.url` property in the liquibase.properties file should be pointing to this instance: `jdbc:postgresql://localhost:5433/postgres`.
+
+Next, connect to the cloud instance using cloud-sql-proxy, exposing connection on localhost:5433:
+```bash
+cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth --port 5433
+```
+
+Execute the `liquibase diff-changelog` command.
+```bash
+liquibase diff-changelog \
+  --password=<local_pwd> \
+  --reference-password=<cloudsql_pwd>
+```
+
+Sanitize the generated changelog file and place it under the changelog directory, incrementing the version count. Example:
+`db/changelog/changelog-0.x/chnagelog-0.2.sql`
+TODO: script to simplify this
+
 ### Cloud-sql-proxy
 ```bash
 cloud-sql-proxy impactful-mode-268210:us-central1:reminisce --gcloud-auth --port 5433
