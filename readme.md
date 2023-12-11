@@ -169,7 +169,7 @@ gcloud iam service-accounts add-iam-policy-binding "${SA_ID}" \
 
 ### Application user set-up
 
-## User account
+#### User account
 
 This account is accessed by the application to read and write data.
 This script grants SELECT, INSERT, UPDATE, and DELETE privileges on all tables and USAGE and SELECT privileges on all sequences within the public schema.
@@ -194,7 +194,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT USAGE, SELECT ON SEQUENCES TO reminisce_user;
 ```
 
-## Owner account
+#### Owner account
 
 This is the account accessed by the GitHub workflow to execute liquibase.
 The permissions are quite extensive as the account needs to manage and modify database objects.
